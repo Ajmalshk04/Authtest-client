@@ -18,7 +18,7 @@ export const AuthProvider: React.FC = ({ children }) => {
   useEffect(() => {
     const checkLogin = async () => {
       try {
-        const { data } = await axios.get('http://localhost:4455/api/protected', { withCredentials: true });
+        const { data } = await axios.get('https://auth-testing-b4ia.onrender.com/api/protected', { withCredentials: true });
         setUser(data.userId);
       } catch (error) {
         setUser(null);
@@ -30,7 +30,7 @@ export const AuthProvider: React.FC = ({ children }) => {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      await axios.post('http://localhost:4455/api/login', { email, password }, { withCredentials: true });
+      await axios.post('https://auth-testing-b4ia.onrender.com/api/login', { email, password }, { withCredentials: true });
       setUser(email);
       return true;
     } catch (error) {
@@ -40,7 +40,7 @@ export const AuthProvider: React.FC = ({ children }) => {
 
   const register = async (email: string, password: string): Promise<boolean> => {
     try {
-      await axios.post('http://localhost:4455/api/register', { email, password }, { withCredentials: true });
+      await axios.post('https://auth-testing-b4ia.onrender.com/api/register', { email, password }, { withCredentials: true });
       setUser(email);
       return true;
     } catch (error) {
@@ -49,7 +49,7 @@ export const AuthProvider: React.FC = ({ children }) => {
   };
 
   const logout = async (): Promise<void> => {
-    await axios.post('http://localhost:4455/api/logout', {}, { withCredentials: true });
+    await axios.post('https://auth-testing-b4ia.onrender.com/api/logout', {}, { withCredentials: true });
     setUser(null);
   };
 
