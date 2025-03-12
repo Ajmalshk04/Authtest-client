@@ -1,69 +1,58 @@
-import React, { useState } from 'react';
-import { useAuth } from '../AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useAuth } from '../hooks/useAuth';
 
-const Register: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const { register } = useAuth();
-  const navigate = useNavigate();
+function Register() {
+  const [credentials, setCredentials] = useState({ email: '', password: '' });
+  const { register, registerLoading, registerError } = useAuth();
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
-    const success = await register(email, password);
-    if (success) {
-      navigate('/dashboard'); // Redirect to dashboard on successful registration
-    } else {
-      setError('Registration failed. Please try again.');
-    }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    register(credentials);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
-        <h2 className="text-2xl mb-4 text-center">Register</h2>
-        {error && <p className="mb-4 text-red-500">{error}</p>}
-        <div className="mb-4">
-          <input 
-            type="email" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            placeholder="Email"
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-        </div>
-        <div className="mb-4">
-          <input 
-            type="password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            placeholder="Password"
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-        </div>
-        <div className="mb-4">
-          <input 
-            type="password" 
-            value={confirmPassword} 
-            onChange={(e) => setConfirmPassword(e.target.value)} 
-            placeholder="Confirm Password"
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-        </div>
-        <button type="submit" className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600">
-          Register
-        </button>
-      </form>
+    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-surface rounded-xl shadow-lg p-8">
+        <h2 className="text-3xl font-bold text-primary text-center">Register</h2>
+        {registerError && (
+          <p className="text-error text-center bg-error/10 p-2 rounded-lg">
+            {registerError.message}
+          </p>
+        )}
+        <form className="space-y-6" onSubmit={handleSubmit}>
+          <div>
+            <input
+              type="email"
+              value={credentials.email}
+              onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
+              placeholder="Email"
+              required
+              disabled={registerLoading}
+              className="w-full px-4 py-3 rounded-lg border border-primary/20 focus:outline-none focus:ring-2 focus:ring-secondary text-primary placeholder-primary/50 bg-surface"
+            />
+          </div>
+          <div>
+            <input
+              type="password"
+              value={credentials.password}
+              onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+              placeholder="Password"
+              required
+              disabled={registerLoading}
+              className="w-full px-4 py-3 rounded-lg border border-primary/20 focus:outline-none focus:ring-2 focus:ring-secondary text-primary placeholder-primary/50 bg-surface"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={registerLoading}
+            className="w-full py-3 px-4 rounded-lg bg-secondary text-white font-semibold hover:bg-secondary/90 focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 disabled:opacity-50 transition-colors"
+          >
+            {registerLoading ? 'Registering...' : 'Register'}
+          </button>
+        </form>
+      </div>
     </div>
   );
-};
+}
 
 export default Register;

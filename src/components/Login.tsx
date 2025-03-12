@@ -1,53 +1,63 @@
-import React, { useState } from 'react';
-import { useAuth } from '../AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useAuth } from '../hooks/useAuth';
 
-const Login: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const { login } = useAuth();
-  const navigate = useNavigate();
+function Login() {
+  const [credentials, setCredentials] = useState({ email: '', password: '' });
+  const { login, loginLoading, loginError } = useAuth();
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    const success = await login(email, password);
-    if (success) {
-      navigate('/dashboard');
-    } else {
-      setError('Invalid credentials');
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!credentials || !credentials.email || !credentials.password) {
+      console.error('Credentials are invalid:', credentials);
+      return;
     }
+    console.log('Submitting credentials:', credentials);
+    login(credentials); // Ensure this matches the variable name
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
-        <h2 className="text-2xl mb-4 text-center">Login</h2>
-        {error && <p className="mb-4 text-red-500">{error}</p>}
-        <div className="mb-4">
-          <input 
-            type="email" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            placeholder="Email"
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-        </div>
-        <div className="mb-4">
-          <input 
-            type="password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            placeholder="Password"
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-        </div>
-        <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
-          Login
-        </button>
-      </form>
+    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-surface rounded-xl shadow-lg p-8">
+        <h2 className="text-3xl font-bold text-primary text-center">Login</h2>
+        {loginError && (
+          <p className="text-error text-center bg-error/10 p-2 rounded-lg">
+            {loginError.message}
+          </p>
+        )}
+        <form className="space-y-6" onSubmit={handleSubmit}>
+          <div>
+            <input
+              type="email"
+              value={credentials.email}
+              onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
+              placeholder="Email"
+              required
+              disabled={loginLoading}
+              className="w-full px-4 py-3 rounded-lg border border-primary/20 focus:outline-none focus:ring-2 focus:ring-secondary text-primary placeholder-primary/50 bg-surface"
+            />
+          </div>
+          <div>
+            <input
+              type="password"
+              value={credentials.password}
+              onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+              placeholder="Password"
+              required
+              disabled={loginLoading}
+              className="w-full px-4 py-3 rounded-lg border border-primary/20 focus:outline-none focus:ring-2 focus:ring-secondary text-primary placeholder-primary/50 bg-surface"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={loginLoading}
+            className="w-full py-3 px-4 rounded-lg bg-secondary text-white font-semibold hover:bg-secondary/90 focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 disabled:opacity-50 transition-colors"
+          >
+            {loginLoading ? 'Logging in...' : 'Login'}
+          </button>
+        </form>
+      </div>
     </div>
   );
-};
+}
 
 export default Login;
