@@ -28,22 +28,31 @@
 
 // export default axiosInstance;
 
-import axios from "axios";
+import axios from 'axios';
+
+const apiUrl = import.meta.env.VITE_API_URL; // Use Vite's import.meta.env
+
+// function isValidUrl(string) {
+//   try {
+//     new URL(string);
+//     return true;
+//   } catch (_) {
+//     return false;
+//   }
+// }
+
+// if (!apiUrl || !isValidUrl(apiUrl)) {
+//   console.error(`VITE_API_URL is invalid or not set. Got: "${apiUrl}". Please set it in your environment variables.`);
+//   throw new Error(`VITE_API_URL must be a valid URL. Got: ${apiUrl}`);
+// }
 
 const axiosInstance = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
+  baseURL: apiUrl,
   withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
-export const setCsrfToken = (csrfToken) => {
-  if (csrfToken) {
-    axiosInstance.defaults.headers.common["X-CSRF-Token"] = csrfToken;
-  } else {
-    delete axiosInstance.defaults.headers.common["X-CSRF-Token"];
-  }
+export const setCsrfToken = (token) => {
+  axiosInstance.defaults.headers.common['x-csrf-token'] = token;
 };
 
 export default axiosInstance;
